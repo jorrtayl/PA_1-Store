@@ -3,6 +3,8 @@
  * Date: 01 / 19 / 2021
  * Description: This program allows the user to do things that a customer would be able to do in a store 
  * such as: check the items, purchase items, check the price, and they receive information about their purchases (receipts)
+ * 
+ * Advanced Version
  */
 
 using System;
@@ -61,7 +63,10 @@ namespace PA_1_Getting_Started
             Console.WriteLine("1. Check the price of the item.");
             Console.WriteLine("2. Display the information on the item.");
             Console.WriteLine("3. Purchase the item.");
-            Console.WriteLine("4. Quit");
+            Console.WriteLine("4. Buy a different item");
+            Console.WriteLine("5. Print out my list");
+            Console.WriteLine("6. Remove an item from my list");
+            Console.WriteLine("7. Quit");
         }
 
         protected string _type, _name;
@@ -164,106 +169,113 @@ namespace PA_1_Getting_Started
                 int switchItem = 0, switchFunction = 0;
                 string item = "";
 
-                Item purchase = new Vegetable();
+                List<Item> stuff = new List<Item>();
+                Item purchase = new Vegetable(); // just a default
 
-                bool firstWhile = true;
-
-                while (firstWhile)
-                {
-                    Console.WriteLine("Welcome to Bob's store! Please select an option below by typing in the corresponding number.");
-                    Console.WriteLine("To begin, please select what item you are buying.");
-                    Console.WriteLine("1. Vegetable");
-                    Console.WriteLine("2. Textbook");
-                    Console.WriteLine("3. Game");
-
-                    switchItem = Convert.ToInt32(Console.ReadLine());
+                ChooseType(stuff, out purchase);
 
 
-                    // This work but I wasn't for sure if Dr. Ericson would accept it.
-                    /*if (switchItem > 3 || switchItem < 0)
-                        continue;
-
-                    purchase = (switchItem == 1) ? new Vegetable() : (switchItem == 2) ? new Textbook() : (Item)new Game();
-                    Console.WriteLine("What type of " + purchase.GetType().Name + " are you buying?");
-
-                    purchase.Type = Console.ReadLine();
-
-                    string message = (switchItem == 1) ? "What brand name of " : (switchItem == 2) ? "What genre of " : "What is the name of the ";
-                    Console.WriteLine(message + purchase.Type + '?');
-                    purchase.Name = Console.ReadLine();*/
-
-                    switch (switchItem)
-                    {
-                        case 1:
-                            item = "Vegetable";
-                            Console.WriteLine("What type of " + item + " are you buying?");
-                            purchase = new Vegetable();
-                            purchase.Type = Console.ReadLine();
-
-                            Console.WriteLine("What brand name of " + purchase.Type + '?');
-                            purchase.Name = Console.ReadLine();
-
-                            firstWhile = false;
-                            break;
-
-                        case 2:
-                            item = "Textbook";
-                            Console.WriteLine("What type of " + item + " are you buying?");
-                            purchase = new Textbook();
-                            purchase.Type = Console.ReadLine();
-
-                            Console.WriteLine("What is the name of the " + purchase.Type + '?');
-                            purchase.Name = Console.ReadLine();
-
-                            firstWhile = false;
-                            break;
-                        case 3:
-                            item = "Game";
-                            Console.WriteLine("What type of " + item + " are you buying?");
-                            purchase = new Game();
-                            purchase.Type = Console.ReadLine();
-
-                            Console.WriteLine("What is the name of the " + purchase.Type + '?');
-                            purchase.Name = Console.ReadLine();
-
-                            firstWhile = false;
-                            break;
-                        default:
-                            Console.WriteLine("Item choice does not exist!");
-                            Console.WriteLine("Select a number 1 - 3.");
-                            break;
-                    }
-                    Random r = new Random(DateTime.Now.Second);
-                    purchase.Price = r.Next(20, 100) + Math.Round(r.NextDouble(), 2, MidpointRounding.AwayFromZero);
-                    purchase.Quantity = r.Next(1, 10);
-                }
 
                 while (true)
                 {
                     Item.menu();
-                    switchFunction = Convert.ToInt32(Console.ReadLine());
+                    try
+                    {
+                        switchFunction = Convert.ToInt32(Console.ReadLine());
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Invalid option, please select another.");
+                        continue;
+                    }
+                    Console.WriteLine("");
 
                     switch (switchFunction)
                     {
                         case 1:
-                            purchase.checkPrice();
-                            break;
+                            {
+                                purchase.checkPrice();
+                                break;
+                            }
 
                         case 2:
                             purchase.printInfo();
                             break;
                         case 3:
+                            stuff.Add(purchase);
                             purchase.purchase();
                             break;
                         case 4:
-                            Console.WriteLine("Closing\n");
+                            ChooseType(stuff, out purchase);
+                            break;
+                        case 5:
+                            foreach (var i in stuff)
+                            {
+                                Console.WriteLine(String.Format("{0}: {1}", i.Name, i.Price));
+                            }
+                            break;
+                        case 6:
+                            {
+                                if (stuff.Count > 0)
+                                {
+                                    Console.WriteLine("Choose an item to remove:\n");
+                                    int count = 0;
+                                    foreach (var i in stuff)
+                                    {
+                                        Console.WriteLine(String.Format("[{2}]: {0}: {1}", i.Name, i.Price, count));
+                                        count++;
+                                    }
+
+                                    int input = Convert.ToInt32(Console.ReadLine());
+                                    stuff.RemoveAt(input);
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Your list is empty");
+                                }
+                            }
+                            break;
+                        case 7:
+                            Console.WriteLine("Closing");
                             return;
                         default:
                             Console.WriteLine("Invalid option, please select another.");
                             break;
                     }
+
                 }
             }
+
+
+            public static void ChooseType(List<Item> stuff, out Item purchase)
+            {
+                Console.WriteLine("Welcome to Bob Bradley's store! Please select an option below by typing in the corresponding number.");
+                Console.WriteLine("To begin, please select what item you are buying.");
+                Console.WriteLine("1. Vegetable");
+                Console.WriteLine("2. Textbook");
+                Console.WriteLine("3. Game");
+
+                int switchItem = Convert.ToInt32(Console.ReadLine());
+
+                if (switchItem > 3 || switchItem < 0)
+                    ChooseType(stuff, out purchase);
+
+                purchase = (switchItem == 1) ? new Vegetable() : (switchItem == 2) ? new Textbook() : (Item)new Game();
+                Console.WriteLine("What type of " + purchase.GetType().Name + " are you buying?");
+
+                purchase.Type = Console.ReadLine();
+
+                string message = (switchItem == 1) ? "What brand name of " : (switchItem == 2) ? "What genre of " : "What is the name of the ";
+                Console.WriteLine(message + purchase.Type + '?');
+                purchase.Name = Console.ReadLine();
+
+                Random gen = new Random(DateTime.Now.Second);
+                purchase.Price = gen.Next(20, 100) + Math.Round(gen.NextDouble(), 2, MidpointRounding.AwayFromZero);
+                purchase.Quantity = gen.Next(1, 5);
+                return;
+            }
+
+
         }
     }
 }
