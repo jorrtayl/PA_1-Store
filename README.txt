@@ -5,3 +5,6 @@ Description: This program allows the user to do things that a customer would be 
 User enters the item(s) they want to buy and have the option to purchase, look at details on the item, and remove.
 
 I have made a basic and advanced version of this program. Master is the basic and Advanced is the advanced one.
+
+
+Grade the advanced version, I didn't do a List in the master one.
